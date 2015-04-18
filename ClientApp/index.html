@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html data-ng-app="togglApp" data-ng-controller="togglRootController as toggl">
+	<head>
+		<meta charset="utf-8" />
+		<title>Toggl Overtime</title>
+		<link rel="stylesheet" href="/ClientApp/Resources/Styles/toggl.css"/>
+		<script type="text/javascript" src="/ClientApp/Resources/Libraries/angular.js"> </script>
+		<script type="text/javascript" src="/ClientApp/App/app.js"> </script>
+		<script type="text/javascript" src="/ClientApp/App/services.js"> </script>
+		<script type="text/javascript" src="/ClientApp/App/controllers.js"> </script>
+	</head>
+	<body>
+		<h1>Toggl Overtime</h1>
+		API token: <input type="text" data-ng-model="apiToken" /><br />
+		Start date: <input type="date" data-ng-model="startDate" /><br />
+		End date: <input type="date" data-ng-model="endDate" /><br />
+		Regular working hours per week: <input type="number" data-ng-model="regularWorkingHours" /><br /><br />
+		<input type="button" data-ng-click="calculateOvertime()" value="Calculate overtime"/>
+
+		<div class="resultsDiv">
+			<img src="Resources/Images/ajax-loader.gif" alt="Loading..." data-ng-hide="!showLoadingImage"/>
+		</div>
+		<div data-ng-hide="!data || showLoadingImage" class="resultsDiv">
+			<b>Worktime in total:</b> {{formatSeconds(data.Worktime)}}<br />
+			<b>Overtime in total:</b> {{formatSeconds(data.Overtime)}}<br />
+
+			<div data-ng-repeat="week in data.Weeks" >
+				<h3>Week {{week.DisplayName}}</h3>
+				<b>Worktime:</b> {{formatSeconds(week.Worktime)}} <br />
+				<b>Overtime:</b> {{formatSeconds(week.Overtime)}} <br />
+
+				<table>
+					<tr>
+						<th>Date</th>
+						<th>Worktime</th>
+						<th>Overtime</th>
+					</tr>
+					<tr data-ng-repeat="day in week.Days">
+						<td>{{day.Date}}</td>
+						<td>{{formatSeconds(day.Worktime)}}</td>
+						<td>{{formatSeconds(day.Overtime)}}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>
