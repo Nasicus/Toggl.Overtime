@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nasicus.Toggl.Overtime.Utility;
 
 namespace Nasicus.Toggl.Overtime.Model
 {
 	public class DaySummary : ITimeSummary
 	{
-		public DateTime Date;
+		public string DateString
+		{
+			get
+			{
+				return Date.ToString(DateTimeUtility.DateFormat);
+			}
+		}
+
+		internal DateTime Date;
 		public readonly List<long> TimeEntries = new List<long>();
 
 		public double Overtime { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nasicus.Toggl.Overtime.Utility;
 
 namespace Nasicus.Toggl.Overtime.Model
 {
@@ -12,6 +11,14 @@ namespace Nasicus.Toggl.Overtime.Model
 		public double Overtime { get; set; }
 
 		public double Worktime { get; set; }
+
+		public double RegularWorkingSeconds
+		{
+			get
+			{
+				return Days.Count*workDayInSeconds;
+			}
+		}
 
 		public List<DaySummary> Days = new List<DaySummary>();
 
@@ -30,10 +37,13 @@ namespace Nasicus.Toggl.Overtime.Model
 				return Days.Select(d => d.Date).Max();
 			}
 		}
-		
-		public WeekSummary(string displayName)
+
+		private readonly double workDayInSeconds;
+
+		public WeekSummary(string displayName, double workDayInSeconds)
 		{
 			DisplayName = displayName;
+			this.workDayInSeconds = workDayInSeconds;
 		}
 
 		public void AddDay(DaySummary daySummary)

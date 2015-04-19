@@ -38,7 +38,7 @@
 			var hours = Math.floor(s / 3600);
 			var minutes = Math.floor((s / 60) % 60);
 			
-			return (isNegative ? "-" : "") + (hours == 0 ? "" : hours + "h ") + (minutes == 0 ? "" : minutes + " min");
+			return (isNegative ? "-" : "") + (hours == 0 ? "" : hours + "h ") + minutes + " min";
 		};
 	}]);
 

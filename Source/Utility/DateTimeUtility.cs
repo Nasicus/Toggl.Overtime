@@ -22,5 +22,7 @@ namespace Nasicus.Toggl.Overtime.Utility
 			// Return the week of our adjusted day
 			return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 		}
+
+		public const string DateFormat = "MM-dd-yyyy";
 	}
 }

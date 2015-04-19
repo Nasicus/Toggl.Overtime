@@ -12,14 +12,12 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
 {
 	public class DataController : ApiController
 	{
-		public const string DateFormat = "MM-dd-yyyy";
-
 		[HttpGet]
 		public TogglTimeSummary Get(string apiToken, string regularWorkingHoursString, string startDateString, string endDateString)
 		{
 			int regularWorkingHours = Int32.Parse(regularWorkingHoursString);
-			DateTime startDate = DateTime.ParseExact(startDateString, DateFormat, CultureInfo.InvariantCulture);
-			DateTime endDate = DateTime.ParseExact(endDateString, DateFormat, CultureInfo.InvariantCulture);
+			DateTime startDate = DateTime.ParseExact(startDateString, DateTimeUtility.DateFormat, CultureInfo.InvariantCulture);
+			DateTime endDate = DateTime.ParseExact(endDateString, DateTimeUtility.DateFormat, CultureInfo.InvariantCulture);
 
 			double workDayInSeconds = (regularWorkingHours/ 5.0 * 3600);
 
@@ -49,7 +47,7 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
 
 				if (weekSummary == null || currentYearAndWeek != weekSummary.DisplayName)
 				{
-					weekSummary = new WeekSummary(currentYearAndWeek);
+					weekSummary = new WeekSummary(currentYearAndWeek, workDayInSeconds);
 					togglTimeSummary.AddWeek(weekSummary);
 				}
 

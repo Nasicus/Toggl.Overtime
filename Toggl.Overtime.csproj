@@ -84,6 +84,8 @@
     <Content Include="ClientApp\index.html" />
     <Content Include="ClientApp\Resources\Images\ajax-loader.gif" />
     <Content Include="ClientApp\Resources\Libraries\angular.js" />
+    <Content Include="ClientApp\Resources\Styles\normalize.css" />
+    <Content Include="ClientApp\Resources\Styles\skeleton.css" />
     <Content Include="ClientApp\Resources\Styles\toggl.css" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
