@@ -4,15 +4,14 @@ namespace Nasicus.Toggl.Overtime.App_Start
 {
 	public static class WebApiConfig
 	{
+		public const string DateFormat = "MM-dd-yyyy";
+
 		public static void Register(HttpConfiguration config)
 		{
-			// Web API configuration and services
-
-			// Web API routes
 			config.MapHttpAttributeRoutes();
 
-			config.Routes.MapHttpRoute(name: "DefaultApi",
-																 routeTemplate: "api/{controller}/{apiToken}/{regularWorkingHoursString}/{startDateString}/{endDateString}");
+			config.Routes.MapHttpRoute("DefaultApi",
+			                           "api/{controller}/{apiToken}/{regularWorkingHoursString}/{startDateString}/{endDateString}");
 		}
 	}
 }

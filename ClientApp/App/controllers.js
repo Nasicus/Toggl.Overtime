@@ -1,28 +1,30 @@
-﻿(function (app) {
+﻿(function(app)
+{
 	"use strict";
 
-	app.controller("togglRootController", ["$scope", "webApi", "$filter", "appConfig", function ($scope, webApi, $filter, appConfig)
+	app.controller("togglRootController", ["$scope", "webApi", "$filter", "appConfig", function($scope, webApi, $filter, appConfig)
 	{
 		$scope.appConfig = appConfig;
 		$scope.apiToken = localStorage.apiToken;
 		$scope.startDate = localStorage.startDate ? new Date(localStorage.startDate) : null;
 		$scope.endDate = new Date();
-		$scope.regularWorkingHours = localStorage.regularWorkingHours ? parseInt(localStorage.regularWorkingHours) : null;
+		$scope.regularWorkingHours = localStorage.regularWorkingHours ? parseFloat(localStorage.regularWorkingHours) : null;
 
 		$scope.calculateOvertime = function()
 		{
-			var formatDate = function (date) { return $filter('date')(date, appConfig.dateFormat); };
-
 			$scope.showLoadingImage = true;
 
+			var formattedStartDate = $scope.formatDate($scope.startDate);
+			var formattedEndDate = $scope.formatDate($scope.endDate);
+
 			localStorage.apiToken = $scope.apiToken;
-			localStorage.startDate = formatDate($scope.startDate);
+			localStorage.startDate = formattedStartDate;
 			localStorage.regularWorkingHours = $scope.regularWorkingHours;
 
-			webApi.getData($scope.apiToken, $scope.regularWorkingHours, formatDate($scope.startDate), formatDate($scope.endDate), function (data)
+			webApi.getData($scope.apiToken, $scope.regularWorkingHours, formattedStartDate, formattedEndDate, function(data)
 			{
 				$scope.data = data;
-				$scope.blockedWeeks = getDataInBlocks(appConfig.numberOfWeeksPerBlock, data.Weeks);
+				$scope.weeksInBlocks = getDataInBlocks(appConfig.numberOfWeeksPerBlock, data.Weeks);
 				$scope.showLoadingImage = false;
 			});
 		};
@@ -39,8 +41,13 @@
 
 			var hours = Math.floor(s / 3600);
 			var minutes = Math.floor((s / 60) % 60);
-			
+
 			return (isNegative ? "-" : "") + (hours == 0 ? "" : hours + "h ") + minutes + " min";
+		};
+
+		$scope.formatDate = function(date)
+		{
+			return $filter('date')(date, appConfig.dateFormat);
 		};
 
 		function getDataInBlocks(blockSize, data)
@@ -56,14 +63,12 @@
 					returnValues.push(currentResults);
 					currentResults = [];
 				}
-				
+
 				currentResults.push(data[i]);
 				counter++;
 			}
 
 			return returnValues;
 		};
-		
 	}]);
-
 }(togglApp));

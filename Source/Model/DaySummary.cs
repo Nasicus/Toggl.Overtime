@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nasicus.Toggl.Overtime.Utility;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Nasicus.Toggl.Overtime.Model
 {
 	public class DaySummary : ITimeSummary
 	{
-		public string DateString
-		{
-			get
-			{
-				return Date.ToString(DateTimeUtility.DateFormat);
-			}
-		}
+		[JsonProperty(ItemConverterType = typeof(JavaScriptDateTimeConverter))]
+		public DateTime Date;
 
-		internal DateTime Date;
 		public readonly List<long> TimeEntries = new List<long>();
 
 		public double Overtime { get; set; }
+
 		public double Worktime { get; set; }
 
 		public DaySummary(DateTime date)

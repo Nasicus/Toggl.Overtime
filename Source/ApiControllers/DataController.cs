@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Web.Http;
+using Nasicus.Toggl.Overtime.App_Start;
 using Nasicus.Toggl.Overtime.Model;
 using Nasicus.Toggl.Overtime.Utility;
 using Toggl;
@@ -15,9 +16,9 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
 		[HttpGet]
 		public TogglTimeSummary Get(string apiToken, string regularWorkingHoursString, string startDateString, string endDateString)
 		{
-			int regularWorkingHours = Int32.Parse(regularWorkingHoursString);
-			DateTime startDate = DateTime.ParseExact(startDateString, DateTimeUtility.DateFormat, CultureInfo.InvariantCulture);
-			DateTime endDate = DateTime.ParseExact(endDateString, DateTimeUtility.DateFormat, CultureInfo.InvariantCulture);
+			double regularWorkingHours = Double.Parse(regularWorkingHoursString);
+			DateTime startDate = DateTime.ParseExact(startDateString, WebApiConfig.DateFormat, CultureInfo.InvariantCulture);
+			DateTime endDate = DateTime.ParseExact(endDateString, WebApiConfig.DateFormat, CultureInfo.InvariantCulture);
 
 			double workDayInSeconds = (regularWorkingHours/ 5.0 * 3600);
 
@@ -27,7 +28,7 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
 			var timeParams = new TimeEntryParams
 				{
 					StartDate = startDate,
-					EndDate = endDate
+					EndDate = endDate.AddDays(1)
 				};
 
 			double overTime = 0;
@@ -53,24 +54,24 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
 
 				weekSummary.AddDay(daySummary);
 
-				foreach (TimeEntry timeEntry in dayEntry.Where(t => t.Duration != null))
+				foreach (long duration in dayEntry.Where(t => t.Duration != null).Select(timeEntry => (long)timeEntry.Duration))
 				{
-					long duration = (long)timeEntry.Duration;
-
 					daySummary.AddTimeEntry(duration);
 					currentDuration += duration;
 				}
 
 				daySummary.Worktime = currentDuration;
 
-				if (currentDuration > 0)
+				if (currentDuration <= 0)
 				{
-					daySummary.Overtime = currentDuration - workDayInSeconds;
-					weekSummary.Worktime += currentDuration;
-					overTime += daySummary.Overtime;
-					workTime += daySummary.Worktime;
-					weekSummary.Overtime += daySummary.Overtime;
+					continue;
 				}
+
+				daySummary.Overtime = currentDuration - workDayInSeconds;
+				weekSummary.Worktime += currentDuration;
+				overTime += daySummary.Overtime;
+				workTime += daySummary.Worktime;
+				weekSummary.Overtime += daySummary.Overtime;
 			}
 
 			togglTimeSummary.Overtime = overTime;
@@ -78,11 +79,5 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
 
 			return togglTimeSummary;
 		}
-	}
-
-	public static class Parameters
-	{
-		public const double WorkDayInSeconds = (42.0/5)*3600;
-		public const string StartDate = "01.04.2014";
 	}
 }
