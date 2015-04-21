@@ -14,38 +14,84 @@
 	<body>
 		<div class="container">
 			<h1>Toggl Overtime</h1>
-			API token: <input type="text" data-ng-model="apiToken" /><br />
-			Start date: <input type="date" data-ng-model="startDate" /><br />
-			End date: <input type="date" data-ng-model="endDate" /><br />
-			Regular working hours per week: <input type="number" data-ng-model="regularWorkingHours" /><br /><br />
-			<input type="button" data-ng-click="calculateOvertime()" value="Calculate overtime"/>
+			<div class="row">
+				<div class="four columns">
+					API token:
+				</div>
+				<div class="eight columns">
+					<input type="text" data-ng-model="apiToken" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="four columns">
+					Start date:
+				</div>
+				<div class="eight columns">
+					<input type="date" data-ng-model="startDate" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="four columns">
+					End date:
+				</div>
+				<div class="eight columns">
+					<input type="date" data-ng-model="endDate" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="four columns">
+					Regular working hours per week:
+				</div>
+				<div class="eight columns">
+					<input type="number" data-ng-model="regularWorkingHours" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="four columns">
+					&nbsp;
+				</div>
+				<div class="eight columns">
+					<input type="button" data-ng-click="calculateOvertime()" value="Calculate overtime"/>
+				</div>
+			</div>
 
 			<div class="resultsDiv">
 				<img src="ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." data-ng-hide="!showLoadingImage"/>
 			</div>
 			<div data-ng-hide="!data || showLoadingImage" class="resultsDiv">
-				<b>Worktime in total:</b> {{formatSeconds(data.Worktime)}}<br />
-				<b>Overtime in total:</b> {{formatSeconds(data.Overtime)}}<br />
-
+				<div class="row">
+					<div class="one-third column">
+						&nbsp;
+					</div>
+					<div class="one-third column">
+						<h2>Summary</h2>
+						<b>Total Worktime:</b> {{formatSeconds(data.Worktime)}} <br />
+						<b>Total Overtime:</b> {{formatSeconds(data.Overtime)}}
+					</div>
+					<div class="one-third column">
+						&nbsp;
+					</div>
+				</div>
+				<br />
 				<div data-ng-repeat="weeks in weeksInBlocks" class="row">
 					<div class="six columns" data-ng-repeat="week in weeks">
 						<h3>Week {{week.DisplayName}}</h3>
 						<b>Worktime / regular working hours:</b> {{formatSeconds(week.Worktime)}} / {{formatSeconds(week.RegularWorkingSeconds)}} <br />
 						<b>Overtime:</b> {{formatSeconds(week.Overtime)}} <br />
 
-							<table>
-								<tr>
-									<th>Date</th>
-									<th>Worktime</th>
-									<th>Overtime</th>
-								</tr>
-								<tr data-ng-repeat="day in week.Days">
-									<td>{{formatDate(day.Date)}}</td>
-									<td>{{formatSeconds(day.Worktime)}}</td>
-									<td>{{formatSeconds(day.Overtime)}}</td>
-								</tr>
-							</table>
-						</div>
+						<table>
+							<tr>
+								<th>Date</th>
+								<th>Worktime</th>
+								<th>Overtime</th>
+							</tr>
+							<tr data-ng-repeat="day in week.Days">
+								<td>{{formatDateToLocale(day.Date)}}</td>
+								<td>{{formatSeconds(day.Worktime)}}</td>
+								<td>{{formatSeconds(day.Overtime)}}</td>
+							</tr>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -14,8 +14,8 @@
 		{
 			$scope.showLoadingImage = true;
 
-			var formattedStartDate = $scope.formatDate($scope.startDate);
-			var formattedEndDate = $scope.formatDate($scope.endDate);
+			var formattedStartDate = formatDate($scope.startDate);
+			var formattedEndDate = formatDate($scope.endDate);
 
 			localStorage.apiToken = $scope.apiToken;
 			localStorage.startDate = formattedStartDate;
@@ -45,7 +45,12 @@
 			return (isNegative ? "-" : "") + (hours == 0 ? "" : hours + "h ") + minutes + " min";
 		};
 
-		$scope.formatDate = function(date)
+		$scope.formatDateToLocale = function(date)
+		{
+			return new Date(date).toLocaleDateString();
+		};
+
+		function formatDate(date)
 		{
 			return $filter('date')(date, appConfig.dateFormat);
 		};
