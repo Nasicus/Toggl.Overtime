@@ -3,13 +3,13 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Toggl Overtime</title>
-		<link rel="stylesheet" href="/ClientApp/Resources/Styles/normalize.css"/>
-		<link rel="stylesheet" href="/ClientApp/Resources/Styles/skeleton.css"/>
-		<link rel="stylesheet" href="/ClientApp/Resources/Styles/toggl.css"/>
-		<script type="text/javascript" src="/ClientApp/Resources/Libraries/angular.js"> </script>
-		<script type="text/javascript" src="/ClientApp/App/app.js"> </script>
-		<script type="text/javascript" src="/ClientApp/App/services.js"> </script>
-		<script type="text/javascript" src="/ClientApp/App/controllers.js"> </script>
+		<link rel="stylesheet" href="ClientApp/Resources/Styles/normalize.css"/>
+		<link rel="stylesheet" href="ClientApp/Resources/Styles/skeleton.css"/>
+		<link rel="stylesheet" href="ClientApp/Resources/Styles/toggl.css"/>
+		<script type="text/javascript" src="ClientApp/Resources/Libraries/angular.js"> </script>
+		<script type="text/javascript" src="ClientApp/App/app.js"> </script>
+		<script type="text/javascript" src="ClientApp/App/services.js"> </script>
+		<script type="text/javascript" src="ClientApp/App/controllers.js"> </script>
 	</head>
 	<body>
 		<div class="container">
@@ -21,7 +21,7 @@
 			<input type="button" data-ng-click="calculateOvertime()" value="Calculate overtime"/>
 
 			<div class="resultsDiv">
-				<img src="/ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." data-ng-hide="!showLoadingImage"/>
+				<img src="ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." data-ng-hide="!showLoadingImage"/>
 			</div>
 			<div data-ng-hide="!data || showLoadingImage" class="resultsDiv">
 				<b>Worktime in total:</b> {{formatSeconds(data.Worktime)}}<br />

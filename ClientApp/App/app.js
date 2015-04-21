@@ -4,7 +4,7 @@
 	var app = angular.module("togglApp", []);
 
 	app.value("appConfig", {
-		dataWebServiceUrl: "/api/data/",
+		dataWebServiceUrl: "api/data/",
 		dateFormat: "MM-dd-yyyy",
 		numberOfWeeksPerBlock: 2
 	});
