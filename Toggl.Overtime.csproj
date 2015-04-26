@@ -80,6 +80,8 @@
   <ItemGroup>
     <Content Include="ClientApp\App\app.js" />
     <Content Include="ClientApp\App\controllers.js" />
+    <Content Include="ClientApp\App\directives\row-input\row-input.html" />
+    <Content Include="ClientApp\App\directives\row-input\row-input.js" />
     <Content Include="ClientApp\App\services.js" />
     <Content Include="ClientApp\index.html" />
     <Content Include="ClientApp\Resources\Images\ajax-loader.gif" />

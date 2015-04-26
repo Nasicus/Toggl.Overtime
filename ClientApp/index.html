@@ -1,99 +1,84 @@
 ﻿<!DOCTYPE html>
 <html data-ng-app="togglApp" data-ng-controller="togglRootController as toggl">
-	<head>
-		<meta charset="utf-8" />
-		<title>Toggl Overtime</title>
-		<link rel="stylesheet" href="ClientApp/Resources/Styles/normalize.css"/>
-		<link rel="stylesheet" href="ClientApp/Resources/Styles/skeleton.css"/>
-		<link rel="stylesheet" href="ClientApp/Resources/Styles/toggl.css"/>
-		<script type="text/javascript" src="ClientApp/Resources/Libraries/angular.js"> </script>
-		<script type="text/javascript" src="ClientApp/App/app.js"> </script>
-		<script type="text/javascript" src="ClientApp/App/services.js"> </script>
-		<script type="text/javascript" src="ClientApp/App/controllers.js"> </script>
-	</head>
-	<body>
-		<div class="container">
-			<h1>Toggl Overtime</h1>
-			<div class="row">
-				<div class="four columns">
-					API token:
-				</div>
-				<div class="eight columns">
-					<input type="text" data-ng-model="apiToken" />
-				</div>
-			</div>
-			<div class="row">
-				<div class="four columns">
-					Start date:
-				</div>
-				<div class="eight columns">
-					<input type="date" data-ng-model="startDate" />
-				</div>
-			</div>
-			<div class="row">
-				<div class="four columns">
-					End date:
-				</div>
-				<div class="eight columns">
-					<input type="date" data-ng-model="endDate" />
-				</div>
-			</div>
-			<div class="row">
-				<div class="four columns">
-					Regular working hours per week:
-				</div>
-				<div class="eight columns">
-					<input type="number" data-ng-model="regularWorkingHours" />
-				</div>
-			</div>
-			<div class="row">
-				<div class="four columns">
-					&nbsp;
-				</div>
-				<div class="eight columns">
-					<input type="button" data-ng-click="calculateOvertime()" value="Calculate overtime"/>
-				</div>
-			</div>
+    <head>
+        <title>Toggl Overtime</title>
 
-			<div class="resultsDiv">
-				<img src="ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." data-ng-hide="!showLoadingImage"/>
-			</div>
-			<div data-ng-hide="!data || showLoadingImage" class="resultsDiv">
-				<div class="row">
-					<div class="one-third column">
-						&nbsp;
-					</div>
-					<div class="one-third column">
-						<h2>Summary</h2>
-						<b>Total Worktime:</b> {{formatSeconds(data.Worktime)}} <br />
-						<b>Total Overtime:</b> {{formatSeconds(data.Overtime)}}
-					</div>
-					<div class="one-third column">
-						&nbsp;
-					</div>
-				</div>
-				<br />
-				<div data-ng-repeat="weeks in weeksInBlocks" class="row">
-					<div class="six columns" data-ng-repeat="week in weeks">
-						<h3>Week {{week.DisplayName}}</h3>
-						<b>Worktime / regular working hours:</b> {{formatSeconds(week.Worktime)}} / {{formatSeconds(week.RegularWorkingSeconds)}} <br />
-						<b>Overtime:</b> {{formatSeconds(week.Overtime)}} <br />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-						<table>
-							<tr>
-								<th>Date</th>
-								<th>Worktime</th>
-								<th>Overtime</th>
-							</tr>
-							<tr data-ng-repeat="day in week.Days">
-								<td>{{formatDateToLocale(day.Date)}}</td>
-								<td>{{formatSeconds(day.Worktime)}}</td>
-								<td>{{formatSeconds(day.Overtime)}}</td>
-							</tr>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
+        <link rel="stylesheet" href="ClientApp/Resources/Styles/normalize.css"/>
+        <link rel="stylesheet" href="ClientApp/Resources/Styles/skeleton.css"/>
+        <link rel="stylesheet" href="ClientApp/Resources/Styles/toggl.css"/>
+
+        <script type="text/javascript" src="ClientApp/Resources/Libraries/angular.js"> </script>
+        <script type="text/javascript" src="ClientApp/App/app.js"> </script>
+        <script type="text/javascript" src="ClientApp/App/services.js"> </script>
+        <script type="text/javascript" src="ClientApp/App/controllers.js"> </script>
+        <script type="text/javascript" src="ClientApp/App/directives/row-input/row-input.js"> </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Toggl Overtime</h1>
+
+            <div data-ng-row-input data-title="API token" data-input-type="text" data-ng-model="apiToken"></div>
+            <div data-ng-row-input data-title="Start date" data-input-type="date" data-ng-model="startDate"></div>
+            <div data-ng-row-input data-title="End date" data-input-type="date" data-ng-model="endDate"></div>
+            <div data-ng-row-input data-title="Regular working hours per week" data-input-type="number" data-ng-model="regularWorkingHours"></div>
+
+            <div class="row">
+                <div class="four columns">
+                    &nbsp;
+                </div>
+                <div class="eight columns">
+                    <input type="button" data-ng-click="calculateOvertime()" value="Calculate overtime"/>
+                </div>
+            </div>
+
+            <div class="resultsDiv" data-ng-hide="!showLoadingImage">
+                <img src="ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." />
+            </div>
+            
+            <div class="resultsDiv errorDiv" data-ng-hide="!hasError">
+                <h2>Oh no ...an error occured :(</h2>
+                <b>{{errorStatus}}</b>: {{errorMessage}}
+            </div>
+
+            <div data-ng-hide="!data" class="resultsDiv">
+                <div class="row">
+                    <div class="one-third column">
+                        &nbsp;
+                    </div>
+                    <div class="one-third column">
+                        <h2>Summary</h2>
+                        <b>Total Worktime:</b> {{formatSeconds(data.Worktime)}} <br />
+                        <b>Total Overtime:</b> {{formatSeconds(data.Overtime)}}
+                    </div>
+                    <div class="one-third column">
+                        &nbsp;
+                    </div>
+                </div>
+                <br />
+                <div data-ng-repeat="weeks in weeksInBlocks" class="row">
+                    <div class="six columns" data-ng-repeat="week in weeks">
+                        <h3>Week {{week.DisplayName}}</h3>
+                        <b>Worktime / regular working hours:</b> {{formatSeconds(week.Worktime)}} / {{formatSeconds(week.RegularWorkingSeconds)}} <br />
+                        <b>Overtime:</b> {{formatSeconds(week.Overtime)}} <br />
+
+                        <table>
+                            <tr>
+                                <th>Date</th>
+                                <th>Worktime</th>
+                                <th>Overtime</th>
+                            </tr>
+                            <tr data-ng-repeat="day in week.Days">
+                                <td>{{formatDateToLocale(day.Date)}}</td>
+                                <td>{{formatSeconds(day.Worktime)}}</td>
+                                <td>{{formatSeconds(day.Overtime)}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

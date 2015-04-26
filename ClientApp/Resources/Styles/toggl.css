@@ -1,9 +1,19 @@
-﻿div.resultsDiv
-{
-	margin-top: 20px;
+﻿div.resultsDiv {
+     margin-top: 20px;
 }
 
-input
-{
-	width: 100%;
+input {
+    width: 100%;
+}
+
+div.errorDiv {
+    border: 1px solid #ff0000;
+    padding: 5px;
+    -moz-border-radius: 15px;
+    -moz-box-shadow: #FF0000 2px 2px 2px;
+    -webkit-border-radius: 15px;
+    -webkit-box-shadow: #FF0000 2px 2px 2px;
+    border: 1px solid #FF0000;
+    border-radius: 15px;
+    box-shadow: #FF0000 2px 2px 2px;
 }
