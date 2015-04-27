@@ -15,15 +15,16 @@
         <script type="text/javascript" src="ClientApp/App/services.js"> </script>
         <script type="text/javascript" src="ClientApp/App/controllers.js"> </script>
         <script type="text/javascript" src="ClientApp/App/directives/row-input/row-input.js"> </script>
+        <script type="text/javascript" src="ClientApp/App/directives/row-center/row-center.js"> </script>
     </head>
     <body>
         <div class="container">
             <h1>Toggl Overtime</h1>
 
-            <div data-ng-row-input data-title="API token" data-input-type="text" data-ng-model="apiToken"></div>
-            <div data-ng-row-input data-title="Start date" data-input-type="date" data-ng-model="startDate"></div>
-            <div data-ng-row-input data-title="End date" data-input-type="date" data-ng-model="endDate"></div>
-            <div data-ng-row-input data-title="Regular working hours per week" data-input-type="number" data-ng-model="regularWorkingHours"></div>
+            <div data-nc-row-input data-title="API token" data-input-type="text" data-ng-model="apiToken"></div>
+            <div data-nc-row-input data-title="Start date" data-input-type="date" data-ng-model="startDate"></div>
+            <div data-nc-row-input data-title="End date" data-input-type="date" data-ng-model="endDate"></div>
+            <div data-nc-row-input data-title="Regular working hours per week" data-input-type="number" data-ng-model="regularWorkingHours"></div>
 
             <div class="row">
                 <div class="four columns">
@@ -35,27 +36,23 @@
             </div>
 
             <div class="resultsDiv" data-ng-hide="!showLoadingImage">
-                <img src="ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." />
+                <div data-nc-row-center>
+                    <img src="ClientApp/Resources/Images/ajax-loader.gif" alt="Loading..." />
+                </div>
             </div>
             
-            <div class="resultsDiv errorDiv" data-ng-hide="!hasError">
-                <h2>Oh no ...an error occured :(</h2>
-                <b>{{errorStatus}}</b>: {{errorMessage}}
+            <div class="resultsDiv" data-ng-hide="!hasError">
+                <div data-nc-row-center data-additional-class="errorDiv">
+                    <h2>Oh no - an error occured :(</h2>
+                    <b>{{errorStatus}}</b>: {{errorMessage}}
+                </div>
             </div>
 
             <div data-ng-hide="!data" class="resultsDiv">
-                <div class="row">
-                    <div class="one-third column">
-                        &nbsp;
-                    </div>
-                    <div class="one-third column">
-                        <h2>Summary</h2>
-                        <b>Total Worktime:</b> {{formatSeconds(data.Worktime)}} <br />
-                        <b>Total Overtime:</b> {{formatSeconds(data.Overtime)}}
-                    </div>
-                    <div class="one-third column">
-                        &nbsp;
-                    </div>
+                <div data-nc-row-center>
+                    <h2>Summary</h2>
+                    <b>Total Worktime:</b> {{formatSeconds(data.Worktime)}} <br />
+                    <b>Total Overtime:</b> {{formatSeconds(data.Overtime)}}
                 </div>
                 <br />
                 <div data-ng-repeat="weeks in weeksInBlocks" class="row">

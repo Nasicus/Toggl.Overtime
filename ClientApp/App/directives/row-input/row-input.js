@@ -1,10 +1,9 @@
 ﻿(function (app) {
     "use strict";
-    
-    app.directive('ngRowInput', ["appConfig", function (appConfig) {
+
+    app.directive('ncRowInput', ["appConfig", function (appConfig) {
         return {
             restrict: 'A',
-            require: '^ngModel',
             scope: {
                 ngModel: '=',
                 title: '@',
