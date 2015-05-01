@@ -9,7 +9,7 @@
                     success(data);
                 })
                 .error(function(data, status) {
-                    fail(status, data.ExceptionMessage);
+                    fail(status, data.Message);
                 });
         }
 
