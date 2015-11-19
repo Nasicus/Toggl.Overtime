@@ -17,8 +17,7 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
   public class DataController : ApiController
   {
     [HttpGet]
-    public HttpResponseMessage Get(string apiToken, string regularWorkingHoursString, string startDateString,
-      string endDateString)
+    public HttpResponseMessage Get(string apiToken, string regularWorkingHoursString, string startDateString, string endDateString)
     {
       double regularWorkingHours;
       DateTime startDate;
@@ -31,79 +30,59 @@ namespace Nasicus.Toggl.Overtime.ApiControllers
       }
       catch (Exception)
       {
-        return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, "At least one of the passed parameters was not in the correct format!");
+        return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed,
+                                           "At least one of the passed parameters was not in the correct format!");
       }
 
-      double workDayInSeconds = (regularWorkingHours/5.0*3600);
-
-      var togglTimeSummary = new TogglTimeSummary();
-
-      var timeService = new TimeEntryService(apiToken);
-      var timeParams = new TimeEntryParams
-      {
-        StartDate = startDate,
-        EndDate = endDate.AddDays(1)
-      };
-
-      double overTime = 0;
-      double workTime = 0;
-      WeekSummary weekSummary = null;
-
-      Dictionary<DateTime, List<TimeEntry>> orderByDescending;
+      Dictionary<DateTime, List<TimeEntry>> workTimeByDays;
       try
       {
-        orderByDescending = timeService.List(timeParams)
-                                       .GroupBy(h => DateTime.Parse(h.Start).Date)
-                                       .OrderByDescending(d => d.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.ToList());
+        var timeService = new TimeEntryService(apiToken);
+        workTimeByDays = timeService.List(new TimeEntryParams {StartDate = startDate, EndDate = endDate.AddDays(1)})
+                                    .GroupBy(h => DateTime.Parse(h.Start).Date)
+                                    .OrderBy(d => d.Key)
+                                    .ToDictionary(timeEntriesByDay => timeEntriesByDay.Key,
+                                                  timeEntriesByDay => timeEntriesByDay.ToList());
       }
       catch (WebException webEx)
       {
-        HttpWebResponse httpWebResponse = ((HttpWebResponse)webEx.Response);
-        HttpStatusCode statusCode = httpWebResponse.StatusCode;
-        string statusDescription = httpWebResponse.StatusDescription;
+        var httpWebResponse = ((HttpWebResponse) webEx.Response);
         return Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed,
-                                           $"The toggl server (toggl.com) threw an exception ({(int)statusCode}: {statusDescription}) - either your API token is wrong or the servers are down.");
+                                           $"The toggl server (toggl.com) threw an exception ({(int) httpWebResponse.StatusCode}:" +
+                                           $" {httpWebResponse.StatusDescription}) - either your API token is wrong or the servers are down.");
       }
 
-      foreach (KeyValuePair<DateTime, List<TimeEntry>> dayEntry in orderByDescending)
+      double regularWorkDayInSeconds = (regularWorkingHours / 5.0 * 3600);
+      var togglTimeSummary = new TogglTimeSummary();
+
+      foreach (var daysByWeek in workTimeByDays.GroupBy(timeEntriesByDay => GetWeekGroupKey(timeEntriesByDay.Key),
+                                                        timeEntriesByDay => new {Day = timeEntriesByDay.Key, TimeEntries = timeEntriesByDay.Value}))
       {
-        DaySummary daySummary = new DaySummary(dayEntry.Key);
-        long currentDuration = 0;
+        var weekSummary = new WeekSummary(daysByWeek.Key, regularWorkDayInSeconds);
 
-        string currentYearAndWeek = $"{daySummary.Date.Year}-{DateTimeUtility.GetIso8601WeekOfYear(daySummary.Date)}";
-
-        if (weekSummary == null || currentYearAndWeek != weekSummary.DisplayName)
+        foreach (var timeEntriesByDay in daysByWeek)
         {
-          weekSummary = new WeekSummary(currentYearAndWeek, workDayInSeconds);
-          togglTimeSummary.AddWeek(weekSummary);
+          var daySummary = new DaySummary(timeEntriesByDay.Day, weekSummary.IsRegularWorkDayLimitReached ? 0 : regularWorkDayInSeconds);
+
+          foreach (long timeEntry in timeEntriesByDay.TimeEntries
+                                                     .Where(t => t.Duration.HasValue && t.Duration > 0)
+                                                     .Select(t => (long) t.Duration))
+          {
+            daySummary.AddTimeEntry(timeEntry);
+          }
+
+          weekSummary.AddDay(daySummary);
         }
 
-        foreach (long duration in dayEntry.Value.Where(t => t.Duration != null).Select(timeEntry => (long) timeEntry.Duration))
-        {
-          daySummary.AddTimeEntry(duration);
-          currentDuration += duration;
-        }
-
-        daySummary.Worktime = currentDuration;
-
-        if (currentDuration <= 0)
-        {
-          continue;
-        }
-
-        weekSummary.AddDay(daySummary);
-
-        daySummary.Overtime = currentDuration - workDayInSeconds;
-        weekSummary.Worktime += currentDuration;
-        overTime += daySummary.Overtime;
-        workTime += daySummary.Worktime;
-        weekSummary.Overtime += daySummary.Overtime;
+        togglTimeSummary.AddWeek(weekSummary);
       }
-
-      togglTimeSummary.Overtime = overTime;
-      togglTimeSummary.Worktime = workTime;
 
       return Request.CreateResponse(HttpStatusCode.OK, togglTimeSummary);
+    }
+
+    private static string GetWeekGroupKey(DateTime day)
+    {
+      return $"{day.Year}-{DateTimeUtility.GetIso8601WeekOfYear(day)}";
     }
   }
 }

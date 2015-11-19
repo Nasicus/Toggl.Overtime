@@ -4,51 +4,40 @@ using System.Linq;
 
 namespace Nasicus.Toggl.Overtime.Model
 {
-	public class WeekSummary : ITimeSummary
-	{
-		public string DisplayName;
+  public class WeekSummary : ITimeSummary
+  {
+    private const int regularWorkDaysPerWeek = 5;
 
-		public double Overtime { get; set; }
+    private readonly double workDayInSeconds;
 
-		public double Worktime { get; set; }
+    public string DisplayName { get; private set; }
 
-		public double RegularWorkingSeconds
-		{
-			get
-			{
-				return Days.Count*workDayInSeconds;
-			}
-		}
+    public double Overtime { get; private set; }
 
-		public List<DaySummary> Days = new List<DaySummary>();
+    public double Worktime { get; private set; }
 
-		internal DateTime EarliestDay
-		{
-			get
-			{
-				return Days.Select(d => d.Date).Min();
-			}
-		}
+    public IEnumerable<DaySummary> Days => _days;
+    private readonly List<DaySummary> _days = new List<DaySummary>();
 
-		internal DateTime LatestDay
-		{
-			get
-			{
-				return Days.Select(d => d.Date).Max();
-			}
-		}
+    public double RegularWorkingSeconds => (_days.Count > regularWorkDaysPerWeek ? regularWorkDaysPerWeek : _days.Count) * workDayInSeconds;
 
-		private readonly double workDayInSeconds;
+    internal DateTime EarliestDay => Days.Select(d => d.Date).Min();
 
-		public WeekSummary(string displayName, double workDayInSeconds)
-		{
-			DisplayName = displayName;
-			this.workDayInSeconds = workDayInSeconds;
-		}
+    internal DateTime LatestDay => Days.Select(d => d.Date).Max();
 
-		public void AddDay(DaySummary daySummary)
-		{
-			Days.Add(daySummary);
-		}
-	}
+    internal bool IsRegularWorkDayLimitReached => _days.Count >= regularWorkDaysPerWeek;
+
+    public WeekSummary(string displayName, double workDayInSeconds)
+    {
+      DisplayName = displayName;
+      this.workDayInSeconds = workDayInSeconds;
+    }
+
+    public void AddDay(DaySummary daySummary)
+    {
+      _days.Add(daySummary);
+      Worktime += daySummary.Worktime;
+      Overtime += daySummary.Overtime;
+    }
+  }
 }

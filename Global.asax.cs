@@ -4,11 +4,11 @@ using Nasicus.Toggl.Overtime.App_Start;
 
 namespace Nasicus.Toggl.Overtime
 {
-	public class WebApiApplication : HttpApplication
-	{
-		protected void Application_Start()
-		{
-			GlobalConfiguration.Configure(WebApiConfig.Register);
-		}
-	}
+  public class WebApiApplication : HttpApplication
+  {
+    protected void Application_Start()
+    {
+      GlobalConfiguration.Configure(WebApiConfig.Register);
+    }
+  }
 }
